@@ -28,15 +28,13 @@ public function apiRequest ($httpMethod, $apiMethod, $encPostData = false)
     try {
     $apiUrl = $this->_scopeConfig->getValue ('intelipost_basic/settings/api_url');
     $apiKey = $this->_scopeConfig->getValue ('intelipost_basic/settings/api_key');
-
+    $headers = array('Content-Type: application/json', "api_key: {$apiKey}", "platform: Magento2");
+        
     $curl = curl_init ();
 
     curl_setopt($curl, CURLOPT_TIMEOUT, 3);
     curl_setopt($curl, CURLOPT_URL, $apiUrl . $apiMethod);
-    curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-        'Content-Type: application/json',
-        "api_key: {$apiKey}",
-    ));
+    curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($curl, CURLOPT_ENCODING , "");
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
@@ -49,12 +47,7 @@ public function apiRequest ($httpMethod, $apiMethod, $encPostData = false)
 
     $response = curl_exec ($curl);
 
-    curl_close ($curl);
-    
-    $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-    
-    file_put_contents('intelipostrequest', $code, FILE_APPEND);
-    file_put_contents('intelipostrequest', print_r($response, true), FILE_APPEND);
+    curl_close ($curl);        
     
     } catch(\Magento\Framework\Validator\Exception $e)
     {
